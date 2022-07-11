@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>94d8db6c-defc-4d33-8bc2-20b18e88b02b</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,10 +20,27 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.16.1" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.1" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="DbContexts\ChllDbContext\Entities\" />
+    <Folder Include="DbContexts\ChllDbContext\Enums\" />
+    <Folder Include="DbContexts\ChllDbContext\Interfaces\Validators\" />
+    <Folder Include="DbContexts\ChllDbContext\Interfaces\Seeders\" />
+    <Folder Include="DbContexts\ChllDbContext\Interfaces\Repositories\" />
+    <Folder Include="DbContexts\ChllDbContext\Mappings\" />
+    <Folder Include="DbContexts\ChllDbContext\Validators\" />
+    <Folder Include="DbContexts\ChllDbContext\Repositories\" />
+    <Folder Include="Models\Responses\" />
+    <Folder Include="Models\Requests\" />
+    <Folder Include="Extensions\" />
+    <Folder Include="Services\" />
+    <Folder Include="Options\" />
   </ItemGroup>
 
 </Project>
