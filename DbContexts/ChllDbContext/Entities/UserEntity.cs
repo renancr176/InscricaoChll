@@ -9,5 +9,4 @@ public class UserEntity : IdentityUser<Guid>
     public UserStatusEnum Status { get; set; } = UserStatusEnum.Active;
     public string Token { get; set; }
     public DateTime? TokenExpiration { get; set; }
-    public string Test { get; set; }
 }
