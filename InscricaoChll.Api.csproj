@@ -11,9 +11,13 @@
 
   <ItemGroup>
     <Compile Remove="InscricaoChll.Tests\**" />
+    <Compile Remove="tests\**" />
     <Content Remove="InscricaoChll.Tests\**" />
+    <Content Remove="tests\**" />
     <EmbeddedResource Remove="InscricaoChll.Tests\**" />
+    <EmbeddedResource Remove="tests\**" />
     <None Remove="InscricaoChll.Tests\**" />
+    <None Remove="tests\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +28,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.6" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
