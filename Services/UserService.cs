@@ -397,7 +397,7 @@ public class UserService : IUserService
                     UserName = x.Key.UserName,
                     Email = x.Key.Email,
                     Status = x.Key.Status,
-                    Roles = x.Select(x => x.role).ToList()
+                    Roles = Enum.GetValues<RoleEnum>().Where(role => x.Select(x => x.role).ToList().Contains(role.ToString()))
                 })
                 .ToList();
 

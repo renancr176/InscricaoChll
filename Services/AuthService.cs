@@ -118,7 +118,7 @@ public class AuthService : IAuthService
                 UserName = user.UserName,
                 Email = user.Email,
                 Name = user.Name,
-                Roles = roles.ToList(),
+                Roles = Enum.GetValues<RoleEnum>().Where(role => roles.Contains(role.ToString())),
                 Status = user.Status
             }
         };

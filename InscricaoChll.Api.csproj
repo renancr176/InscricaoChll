@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="InscricaoChll.Tests\**" />
+    <Content Remove="InscricaoChll.Tests\**" />
+    <EmbeddedResource Remove="InscricaoChll.Tests\**" />
+    <None Remove="InscricaoChll.Tests\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="FluentValidation" Version="11.1.0" />
