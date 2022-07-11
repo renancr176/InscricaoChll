@@ -5,9 +5,7 @@ namespace InscricaoChll.Api.Models.Requests;
 
 public class UserSearchRequest : PagedRequest
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public IEnumerable<RoleEnum> HasRoles { get; set; } = new List<RoleEnum>();
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public IEnumerable<RoleEnum> NotHaveRoles { get; set; } = new List<RoleEnum>();
-    public string Name { get; set; }
+    public string? Name { get; set; }
 }

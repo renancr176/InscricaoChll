@@ -1,5 +1,4 @@
-﻿using InscricaoChll.Api.Interfaces;
-using InscricaoChll.Api.Interfaces.Services;
+﻿using InscricaoChll.Api.Interfaces.Services;
 using InscricaoChll.Api.Options;
 using Microsoft.Extensions.Options;
 

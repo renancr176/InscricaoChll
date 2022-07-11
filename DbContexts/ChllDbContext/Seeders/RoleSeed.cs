@@ -6,9 +6,9 @@ namespace InscricaoChll.Api.DbContexts.ChllDbContext.Seeders;
 
 public class RoleSeed : IRoleSeed
 {
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 
-    public RoleSeed(RoleManager<IdentityRole> roleManager)
+    public RoleSeed(RoleManager<IdentityRole<Guid>> roleManager)
     {
         _roleManager = roleManager;
     }
@@ -19,7 +19,7 @@ public class RoleSeed : IRoleSeed
         {
             if (!await _roleManager.RoleExistsAsync(role.ToString()))
             {
-                await _roleManager.CreateAsync(new IdentityRole(role.ToString()));
+                await _roleManager.CreateAsync(new IdentityRole<Guid>(role.ToString()));
             }
         }
     }

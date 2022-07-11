@@ -22,15 +22,10 @@ namespace InscricaoChll.Api.Controllers
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
-        private readonly IStringLocalizer<UserController> _localizer;
-        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UserController(IUserService userService, IStringLocalizer<UserController> localizer,
-            RoleManager<IdentityRole> roleManager)
+        public UserController(IUserService userService)
         {
             _userService = userService;
-            _localizer = localizer;
-            _roleManager = roleManager;
         }
 
         [HttpGet("Search")]
@@ -46,101 +41,14 @@ namespace InscricaoChll.Api.Controllers
         [HttpPost]
         [SwaggerResponse(200, Type = typeof(BaseResponse<UserModel>))]
         [SwaggerResponse(400, Type = typeof(BaseResponse))]
-        public async Task<IActionResult> CreateAsync([FromBody] UserCreateRequest request)
+        [AllowAnonymous]
+        public async Task<IActionResult> SignUpAsync([FromBody] SignUpRequest request)
         {
             if (!ModelState.IsValid) return InvalidModelResponse();
            
-            return Response(await _userService.SignUpAsync(request, request.Roles));
+            return Response(await _userService.SignUpAsync(request, new [] {RoleEnum.User}));
         }
-
-        [HttpPost("CreateRole/{roleName}")]
-        [SwaggerResponse(200, Type = typeof(BaseResponse))]
-        [SwaggerResponse(400, Type = typeof(BaseResponse))]
-        public async Task<IActionResult> CreateRole(string roleName)
-        {
-            if (string.IsNullOrEmpty(roleName)
-            || string.IsNullOrWhiteSpace(roleName)
-            || roleName.Trim().Contains(" ")
-            || roleName.Length < 3)
-                return BadRequest(new BaseResponse()
-                {
-                    Errors = new List<BaseResponseError>()
-                    {
-                        new BaseResponseError()
-                        {
-                            ErrorCode = "InvalidRoleName",
-                            Message = _localizer.GetString("Error_InvalidRoleName")
-                        }
-                    }
-                });
-
-            if (await _roleManager.RoleExistsAsync(roleName))
-                return BadRequest(new BaseResponse()
-                {
-                    Errors = new List<BaseResponseError>()
-                    {
-                        new BaseResponseError()
-                        {
-                            ErrorCode = "RoleAlreadyExists",
-                            Message = _localizer.GetString("Error_RoleAlreadyExists")
-                        }
-                    }
-                });
-
-            var result = await _roleManager.CreateAsync(new IdentityRole(roleName));
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(new BaseResponse()
-                {
-                    Errors = result.Errors.Select(e => new BaseResponseError()
-                    {
-                        ErrorCode = e.Code,
-                        Message = e.Description
-                    }).ToList()
-                });
-            }
-
-            return Ok(new BaseResponse());
-        }
-
-        [HttpDelete("DeleteRole/{id}")]
-        [SwaggerResponse(200, Type = typeof(BaseResponse))]
-        [SwaggerResponse(400, Type = typeof(BaseResponse))]
-        public async Task<IActionResult> DeleteRole(string id)
-        {
-            var role = await _roleManager.FindByIdAsync(id);
-
-            if (role == null)
-                return BadRequest(new BaseResponse()
-                {
-                    Errors = new List<BaseResponseError>()
-                    {
-                        new BaseResponseError()
-                        {
-                            ErrorCode = "RoleNotExists.",
-                            Message = _localizer.GetString("Error_RoleNotExists")
-                        }
-                    }
-                });
-
-            var result = await _roleManager.DeleteAsync(role);
-
-            if (!result.Succeeded)
-            {
-                return BadRequest(new BaseResponse()
-                {
-                    Errors = result.Errors.Select(e => new BaseResponseError()
-                    {
-                        ErrorCode = e.Code,
-                        Message = e.Description
-                    }).ToList()
-                });
-            }
-
-            return Ok(new BaseResponse());
-        }
-
+        
         [HttpPost("AddRole")]
         [SwaggerResponse(200, Type = typeof(BaseResponse))]
         [SwaggerResponse(400, Type = typeof(BaseResponse))]

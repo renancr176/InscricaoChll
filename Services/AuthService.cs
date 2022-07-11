@@ -8,14 +8,12 @@ using InscricaoChll.Api.Models.Requests;
 using InscricaoChll.Api.Models.Responses;
 using InscricaoChll.Api.Options;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 
 namespace InscricaoChll.Api.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IStringLocalizer<AuthService> _localizer;
     private readonly UserManager<UserEntity> _userManager;
     private readonly SignInManager<UserEntity> _signInManager;
     private readonly IOptions<JwtTokenOptions> _jwtTokenOptions;
@@ -24,11 +22,10 @@ public class AuthService : IAuthService
     private static long ToUnixEpochDate(DateTime date)
         => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
 
-    public AuthService(IStringLocalizer<AuthService> localizer, UserManager<UserEntity> userManager,
+    public AuthService(UserManager<UserEntity> userManager,
         SignInManager<UserEntity> signInManager, IOptions<JwtTokenOptions> jwtTokenOptions,
         IUserService userService)
     {
-        _localizer = localizer;
         _userManager = userManager;
         _signInManager = signInManager;
         _jwtTokenOptions = jwtTokenOptions;
@@ -48,7 +45,7 @@ public class AuthService : IAuthService
                 response.Errors.Add(new BaseResponseError()
                 {
                     ErrorCode = "LoginBlocked",
-                    Message = _localizer.GetString("Error_LoginBlocked")
+                    Message = "Login bloqueado, tente novamente mais tarde."
                 });
             }
             else
@@ -56,7 +53,7 @@ public class AuthService : IAuthService
                 response.Errors.Add(new BaseResponseError()
                 {
                     ErrorCode = "InvalidUseramePassword",
-                    Message = _localizer.GetString("Error_InvalidUseramePassword")
+                    Message = "Usuário ou senha inválido."
                 });
             }
 
@@ -71,8 +68,9 @@ public class AuthService : IAuthService
             response.Errors.Add(new BaseResponseError()
             {
                 ErrorCode = $"EmailConfirmedNotConfirmed",
-                Message = _localizer.GetString($"Error_EmailConfirmedNotConfirmed")
+                Message = "Email não confirmado, verifique seu e-mail para a confirmação de email."
             });
+            return response;
         }
 
         if (user.Status != UserStatusEnum.Active)
@@ -80,8 +78,9 @@ public class AuthService : IAuthService
             response.Errors.Add(new BaseResponseError()
             {
                 ErrorCode = $"User{user.Status}",
-                Message = _localizer.GetString($"Error_User{user.Status}")
+                Message = "Usuário desativado."
             });
+            return response;
         }
 
         var userClaims = await _userManager.GetClaimsAsync(user);

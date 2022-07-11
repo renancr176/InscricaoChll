@@ -8,6 +8,9 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
+  <ItemGroup>
+	<InternalsVisibleTo Include="InscricaoChll.Test" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="InscricaoChll.Tests\**" />
@@ -49,6 +52,7 @@
     <Folder Include="DbContexts\ChllDbContext\Interfaces\Seeders\" />
     <Folder Include="DbContexts\ChllDbContext\Interfaces\Repositories\" />
     <Folder Include="DbContexts\ChllDbContext\Mappings\" />
+    <Folder Include="DbContexts\ChllDbContext\Migrations\" />
     <Folder Include="DbContexts\ChllDbContext\Validators\" />
     <Folder Include="DbContexts\ChllDbContext\Repositories\" />
     <Folder Include="Models\Responses\" />

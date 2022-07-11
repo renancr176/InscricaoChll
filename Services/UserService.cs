@@ -11,8 +11,6 @@ using InscricaoChll.Api.Models.Responses;
 using InscricaoChll.Api.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace InscricaoChll.Api.Services;
@@ -22,18 +20,18 @@ public class UserService : IUserService
     private readonly IOptions<GeneralOptions> _generalOptions;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly UserManager<UserEntity> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly RoleManager<IdentityRole<Guid>> _roleManager;
     private readonly IMapper _mapper;
     private readonly ChllDbContext _chllDbContext;
     private readonly ITemplateService _templateService;
 
     private string _currentUserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-    private UserEntity _currentUser;
+    public UserEntity CurrentUser { get; private set; }
     private GeneralOptions GeneralOptions => _generalOptions.Value;
 
     public UserService(IOptions<GeneralOptions> generalOptions, IHttpContextAccessor httpContextAccessor,
-        UserManager<UserEntity> userManager, RoleManager<IdentityRole> roleManager, IMapper mapper,
-        ChllDbContext chllDbContext, ITemplateService templateService, UserEntity currentUser)
+        UserManager<UserEntity> userManager, RoleManager<IdentityRole<Guid>> roleManager, IMapper mapper,
+        ChllDbContext chllDbContext, ITemplateService templateService)
     {
         _generalOptions = generalOptions;
         _httpContextAccessor = httpContextAccessor;
@@ -42,18 +40,17 @@ public class UserService : IUserService
         _mapper = mapper;
         _chllDbContext = chllDbContext;
         _templateService = templateService;
-        _currentUser = currentUser;
     }
 
     public async Task<UserEntity> CurrentUserAsync()
     {
-        if (_currentUser == null
+        if (CurrentUser == null
             && !string.IsNullOrEmpty(_currentUserId))
         {
-            _currentUser = await _userManager.FindByIdAsync(_currentUserId);
+            CurrentUser = await _userManager.FindByIdAsync(_currentUserId);
         }
 
-        return _currentUser;
+        return CurrentUser;
     }
 
     public async Task<BaseResponse<UserModel>> SignUpAsync(SignUpRequest request, IEnumerable<RoleEnum> roles = null)
@@ -123,7 +120,7 @@ public class UserService : IUserService
             user.TokenExpiration = DateTime.UtcNow.AddMinutes(5);
             await _userManager.UpdateAsync(user);
 
-            var body = _templateService.GetContent("EmailPasswordReset.html",
+            var body = await _templateService.GetContent("EmailPasswordReset.html",
                 new Dictionary<string, string>()
                 {
                     {"#Name", user.Name},
@@ -345,16 +342,6 @@ public class UserService : IUserService
                 });
             }
 
-            if (await _userManager.IsInRoleAsync(user, RoleEnum.User.ToString()))
-            {
-                response.Errors.Add(new BaseResponseError()
-                {
-                    ErrorCode = "CannotChangeCustomersStatus",
-                    Message = "Não foi possível alterar o status da conta."
-                });
-                return response;
-            }
-
             user.Status = request.Status;
 
             await _userManager.UpdateAsync(user);
@@ -436,7 +423,7 @@ public class UserService : IUserService
             user.TokenExpiration = DateTime.UtcNow.AddMinutes(5);
             await _userManager.UpdateAsync(user);
 
-            var body = _templateService.GetContent("EmailConfirmation.html",
+            var body = await _templateService.GetContent("EmailConfirmation.html",
                 new Dictionary<string, string>()
                 {
                     {"#Name", user.Name},

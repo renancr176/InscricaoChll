@@ -2,28 +2,24 @@
 using InscricaoChll.Api.DbContexts.ChllDbContext;
 using InscricaoChll.Api.Options;
 using InscricaoChll.Api.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace InscricaoChll.Api;
 
-public class StartupTests : IStartup
+public class StartupTests
 {
-    public StartupTests(IWebHostEnvironment environment)
+    public StartupTests()
     {
-        Environment = environment;
-
         var builder = new ConfigurationBuilder()
-            .SetBasePath(environment.ContentRootPath)
-            .AddJsonFile("appsettings.json", true, true)
-            .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", true, true)
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile($"appsettings.Testing.json", true, true)
             .AddEnvironmentVariables();
 
         Configuration = builder.Build();
     }
 
     public IConfiguration Configuration { get; }
-
-    public IWebHostEnvironment Environment { get; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -32,6 +28,11 @@ public class StartupTests : IStartup
         services.AddEndpointsApiExplorer();
         services.AddAutoMapper(typeof(Startup));
         services.AddAutoMapperProfiles();
+
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        });
 
         #region DbContexts
 
@@ -58,22 +59,21 @@ public class StartupTests : IStartup
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(WebApplication app, IWebHostEnvironment env)
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
-
-        app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InscricaoChllApi v1"));
+        app.UseDeveloperExceptionPage();
 
         app.UseHttpsRedirection();
+
+        app.UseRouting();
 
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.MapControllers();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+        });
     }
 
     private void Init(IServiceProvider serviceProvider)

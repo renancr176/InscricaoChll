@@ -9,6 +9,7 @@ using InscricaoChll.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -26,7 +27,7 @@ public class Startup : IStartup
     }
 
     public IConfiguration Configuration { get; }
-    public IWebHostEnvironment Environment { get; }
+    public IWebHostEnvironment Environment { get; private set; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
@@ -65,6 +66,11 @@ public class Startup : IStartup
         });
         services.AddAutoMapper(typeof(Startup));
         services.AddAutoMapperProfiles();
+
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.SuppressModelStateInvalidFilter = true;
+        });
 
         #region DbContexts
 
@@ -105,7 +111,7 @@ public class Startup : IStartup
                 });
         });
 
-        services.AddIdentity<UserEntity, IdentityRole>(options =>
+        services.AddIdentity<UserEntity, IdentityRole<Guid>>(options =>
         {
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = true;
@@ -205,7 +211,7 @@ public class Startup : IStartup
 
     private void Init(IServiceProvider serviceProvider)
     {
-        if (Environment.IsProduction())
+        if (Environment?.IsProduction() ?? false)
         {
             serviceProvider.ChllDbMigrate();
         }

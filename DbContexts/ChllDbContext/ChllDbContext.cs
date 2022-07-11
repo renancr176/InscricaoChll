@@ -1,4 +1,5 @@
 ﻿using InscricaoChll.Api.DbContexts.ChllDbContext.Entities;
+using InscricaoChll.Api.DbContexts.ChllDbContext.Mappings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,8 @@ public class ChllDbContext : IdentityDbContext<UserEntity, IdentityRole<Guid>, G
         base.OnModelCreating(modelBuilder);
 
         #region Mappings
+
+        modelBuilder.ApplyConfiguration(new UserEntityMap());
 
         #endregion
     }
